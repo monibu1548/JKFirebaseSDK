@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'JKFirebaseSDK_Example' do
+  pod 'JKFirebaseSDK', :path => '../'
+
+  target 'JKFirebaseSDK_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
