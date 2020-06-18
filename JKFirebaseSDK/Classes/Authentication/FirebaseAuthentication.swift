@@ -27,17 +27,17 @@ enum FirebaseAuthenticationKey: String {
 }
 
 class FirebaseAuthentication: NSObject {
-    static let shared = FirebaseAuthentication()
+    public static let shared = FirebaseAuthentication()
 
     fileprivate var currentNonce: String?
     
     private override init() {}
     
-    func currentUser() -> User? {
+    public func currentUser() -> User? {
         return Auth.auth().currentUser
     }
     
-    func signUpWithEmail(email: String, password: String) {
+    public func signUpWithEmail(email: String, password: String) {
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] (authResult, error) in
             if error != nil {
                 self?.postNotificationSignInError()
@@ -47,7 +47,7 @@ class FirebaseAuthentication: NSObject {
         }
     }
 
-    func signInWithEmail(email: String, password: String) {
+    public func signInWithEmail(email: String, password: String) {
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] (authResult, error) in
             guard let user = authResult?.user, error == nil else {
                 self?.postNotificationSignInError()
@@ -58,7 +58,7 @@ class FirebaseAuthentication: NSObject {
         }
     }
     
-    func signInWithApple() {
+    public func signInWithApple() {
         let nonce = randomNonceString()
         currentNonce = nonce
         let appleIDProvider = ASAuthorizationAppleIDProvider()
@@ -72,7 +72,7 @@ class FirebaseAuthentication: NSObject {
         authorizationController.performRequests()
     }
     
-    func signInWithAnonymous() {
+    public func signInWithAnonymous() {
         Auth.auth().signInAnonymously() { [weak self] (authResult, error) in
             guard let user = authResult?.user, error == nil else {
                 self?.postNotificationSignInError()
@@ -83,7 +83,7 @@ class FirebaseAuthentication: NSObject {
         }
     }
     
-    func signOut() {
+    public func signOut() {
         let firebaseAuth = Auth.auth()
         do {
             try firebaseAuth.signOut()
@@ -95,7 +95,7 @@ class FirebaseAuthentication: NSObject {
         }
     }
 
-    func deleteUser() {
+    public func deleteUser() {
         let firebaseAuth = Auth.auth()
         firebaseAuth.currentUser?.delete(completion: nil)
     }
@@ -110,7 +110,7 @@ class FirebaseAuthentication: NSObject {
 
     // Third-party 로그인 통합을 위한 함수. 현재 계정에 연결된 UserID 를 반환
     var _userID: String?
-    func userID() -> String {
+    public func userID() -> String {
         if let id = _userID {
             return id
         }

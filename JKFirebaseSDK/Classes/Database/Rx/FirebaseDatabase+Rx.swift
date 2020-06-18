@@ -12,7 +12,7 @@ import RxCocoa
 extension FirebaseDatabase: ReactiveCompatible {}
 
 extension Reactive where Base: FirebaseDatabase {
-    func loadObject<D: Decodable>(path: String, type: D.Type) -> Single<D?> {
+    public func loadObject<D: Decodable>(path: String, type: D.Type) -> Single<D?> {
         let single = Single<D?>.create { [weak base] single in
             base?.loadObject(path: path, type: type) { object in
                 return single(.success(object))
@@ -22,7 +22,7 @@ extension Reactive where Base: FirebaseDatabase {
         return single
     }
 
-    func loadFirebaseObject<D: FirebaseObject>(path: String, type: D.Type) -> Single<D?> {
+    public func loadFirebaseObject<D: FirebaseObject>(path: String, type: D.Type) -> Single<D?> {
         let single = Single<D?>.create { [weak base] single in
             base?.loadFirebaseObject(path: path, type: type) { object in
                 guard let object = object else {
@@ -35,7 +35,7 @@ extension Reactive where Base: FirebaseDatabase {
         return single
     }
     
-    func loadFirebaseObjects<D: FirebaseObject>(path: String, query: FirebaseDatabaseQuery =  FirebaseDatabaseQuery(), type: [D].Type) -> Single<[D]> {
+    public func loadFirebaseObjects<D: FirebaseObject>(path: String, query: FirebaseDatabaseQuery =  FirebaseDatabaseQuery(), type: [D].Type) -> Single<[D]> {
         let single = Single<[D]>.create { [weak base] single in
             base?.loadFirebaseObjects(path: path, query: query, type: type) { objects in
                 return single(.success(objects))
@@ -45,36 +45,36 @@ extension Reactive where Base: FirebaseDatabase {
         return single
     }
 
-    func setFirebaseObject(path: String, object: FirebaseObject) -> Single<Void> {
+    public func setFirebaseObject(path: String, object: FirebaseObject) -> Single<Void> {
         base.setFirebaseObject(path: path, object: object)
         return .just(Void())
     }
     
-    func setObject<D: Decodable>(path: String, object: D) -> Single<Void> {
+    public func setObject<D: Decodable>(path: String, object: D) -> Single<Void> {
         base.setObject(path: path, object: object)
         return .just(Void())
     }
 
-    func addFirebaseObject(path: String, object: FirebaseObject) -> Single<String> {
+    public func addFirebaseObject(path: String, object: FirebaseObject) -> Single<String> {
         let childID = base.addFirebaseObject(path: path, object: object)
         return .just(childID)
     }
     
-    func addObject<D: Decodable>(path: String, object: D) -> Single<Void> {
+    public func addObject<D: Decodable>(path: String, object: D) -> Single<Void> {
         base.addObject(path: path, object: object)
         return .just(Void())
     }
     
-    func addAuthID(path: String) -> Single<String> {
+    public func addAuthID(path: String) -> Single<String> {
         return .just(base.addAuthID(path: path))
     }
     
-    func delete(path: String, object: FirebaseObject) -> Single<Void> {
+    public func delete(path: String, object: FirebaseObject) -> Single<Void> {
         base.delete(path: path, object: object)
         return .just(Void())
     }
 
-    func delete(path: String) -> Single<Void> {
+    public func delete(path: String) -> Single<Void> {
         base.delete(path: path)
         return .just(Void())
     }

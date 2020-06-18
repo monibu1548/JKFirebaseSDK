@@ -8,7 +8,7 @@
 
 import Foundation
 
-class FirebaseObject: Decodable {
+public class FirebaseObject: Decodable {
     var key: String? = nil
     var exceptionKeys: [String]? = nil
 }
@@ -19,7 +19,7 @@ protocol EnumForFirebaseObject {
     var valueForDict: String { get }
 }
 
-extension FirebaseObject {
+public extension FirebaseObject {
     func asDict() -> [String: Any] {
         var dict = [String: Any]()
         let otherSelf = Mirror(reflecting: self)

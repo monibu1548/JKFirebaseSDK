@@ -9,7 +9,7 @@
 import Foundation
 import FirebaseDatabase
 
-struct FirebaseDatabaseQuery {
+public struct FirebaseDatabaseQuery {
     enum Order {
         case asec
         case desc
@@ -22,11 +22,12 @@ struct FirebaseDatabaseQuery {
 
     var order: Order = .asec
     var limitCount: UInt = 20
+
+    public init() {}
 }
 
-class FirebaseDatabase {
-
-    static let shared = FirebaseDatabase()
+public class FirebaseDatabase {
+    public static let shared = FirebaseDatabase()
 
     private let database = Database.database().reference()
     private let decoder = JSONDecoder()
