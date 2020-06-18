@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'JKFirebaseSDK'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of JKFirebaseSDK.'
+  s.summary          = 'Firebase에서 제공하는 SDK를 한번 더 래핑합니다.'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -28,7 +28,7 @@ TODO: Add long description of the pod here.
   s.source           = { :git => 'https://github.com/monibu1548/JKFirebaseSDK.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '13.0'
 
   s.source_files = 'JKFirebaseSDK/Classes/**/*'
   
@@ -38,5 +38,14 @@ TODO: Add long description of the pod here.
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.static_framework = true
+  s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency 'Firebase/RemoteConfig', '~> 6.13.0'
+  s.dependency 'Firebase/Storage', '~> 6.13.0'
+  s.dependency 'Firebase/Database', '~> 6.13.0'
+  s.dependency 'Firebase/Analytics', '~> 6.13.0'
+  s.dependency 'Firebase/Auth', '~> 6.13.0'
+  s.dependency 'Firebase/Messaging', '~> 6.13.0'
+  s.dependency 'RxSwift', '~> 5.0.1'
+  s.dependency 'RxOptional', '~> 4.1.0'
 end

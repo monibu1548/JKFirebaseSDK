@@ -1,5 +1,4 @@
 import XCTest
-import JKFirebaseSDK
 
 class Tests: XCTestCase {
     
