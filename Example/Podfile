@@ -2,6 +2,7 @@ use_frameworks!
 
 target 'JKFirebaseSDK_Example' do
   pod 'JKFirebaseSDK', :path => '../'
+  pod 'JKExtension', :git => 'https://github.com/monibu1548/JKExtension'
 
   target 'JKFirebaseSDK_Tests' do
     inherit! :search_paths

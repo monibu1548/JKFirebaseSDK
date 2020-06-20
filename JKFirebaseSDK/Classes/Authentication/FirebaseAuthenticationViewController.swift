@@ -8,16 +8,16 @@
 
 import UIKit
 
-class FirebaseAuthenticationViewController: UIViewController {
-    @IBAction public func didTappedSignInWithAppleID() {
-        if #available(iOS 13.0, *) {
-            FirebaseAuthentication.shared.signInWithApple()
-        } else {
-            // Fallback on earlier versions
-        }
+open class FirebaseAuthenticationViewController: UIViewController {
+    @IBAction open func didTappedSignInWithAppleID() {
+        FirebaseAuthentication.shared.signInWithApple()
     }
 
-    @IBAction public func didTappedSignInWithAnonymous() {
+    @IBAction open func didTappedSignInWithAnonymous() {
         FirebaseAuthentication.shared.signInWithAnonymous()
+    }
+    
+    @IBAction open func didTappedSignInWithGoogle() {
+        FirebaseAuthentication.shared.signInWithGoogle(from: self)
     }
 }

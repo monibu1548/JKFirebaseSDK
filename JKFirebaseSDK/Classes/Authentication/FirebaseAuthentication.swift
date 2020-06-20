@@ -7,22 +7,24 @@
 //
 
 import Foundation
+import GoogleSignIn
 import AuthenticationServices
 import FirebaseAuth
 import CommonCrypto
+import FirebaseCore
 
-enum FirebaseAuthenticationNotification: String {
+public enum FirebaseAuthenticationNotification: String {
     case signOutSuccess
     case signOutError
     case signInSuccess
     case signInError
     
-    var notificationName: NSNotification.Name {
+    public var notificationName: NSNotification.Name {
         return NSNotification.Name(rawValue: self.rawValue)
     }
 }
 
-class FirebaseAuthentication: NSObject {
+public class FirebaseAuthentication: NSObject, GIDSignInDelegate {
     public static let shared = FirebaseAuthentication()
 
     fileprivate var currentNonce: String?
@@ -35,6 +37,36 @@ class FirebaseAuthentication: NSObject {
     
     public func signUpWithEmail(email: String, password: String) {
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] (authResult, error) in
+            guard let user = authResult?.user, error == nil else {
+                self?.postNotificationSignInError()
+                return
+            }
+            self?.registerUser(user: user)
+            self?.postNotificationSignInSuccess()
+        }
+    }
+    
+    public func signInWithGoogle(from: UIViewController) {
+        GIDSignIn.sharedInstance()?.clientID = FirebaseApp.app()?.options.clientID
+        GIDSignIn.sharedInstance()?.delegate = self
+        GIDSignIn.sharedInstance()?.presentingViewController = from
+        GIDSignIn.sharedInstance()?.signIn()
+    }
+    
+    // 구글 로그인 Callback
+    public func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if let _ = error {
+            postNotificationSignInError()
+            return
+        }
+
+        guard let authentication = user.authentication else {
+            postNotificationSignInError()
+            return
+        }
+        
+        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
+        Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
             guard let user = authResult?.user, error == nil else {
                 self?.postNotificationSignInError()
                 return
@@ -137,7 +169,7 @@ extension FirebaseAuthentication: ASAuthorizationControllerDelegate {
 }
 
 extension FirebaseAuthentication: ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         return UIApplication.shared.windows.first!
     }
 }
