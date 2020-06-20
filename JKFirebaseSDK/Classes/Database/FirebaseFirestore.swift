@@ -76,6 +76,17 @@ public class FirebaseFirestore {
         }
     }
     
+    public func upsertDocumentField(key: String, id: String, data: [String: Any], completion: @escaping (Result<Void, FirestoreError>) -> ()) {
+        reference.collection(key).document(id).setData(data, merge: true) { (error) in
+            if let error = error {
+                completion(.failure(.defaultError(error.localizedDescription)))
+                return
+            }
+            completion(.success(Void()))
+            return
+        }
+    }
+
     public func delete(key: String, id: String, completion: @escaping (Result<Void, FirestoreError>) -> ()) {
         reference.collection(key).document(id).delete { (error) in
             if let error = error {

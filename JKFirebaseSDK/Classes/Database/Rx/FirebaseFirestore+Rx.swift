@@ -32,6 +32,16 @@ extension Reactive where Base: FirebaseFirestore {
         return single
     }
     
+    public func upsertDocumentField(key: String, id: String, data: [String: Any]) -> Single<Result<Void, FirestoreError>> {
+        let single = Single<Result<Void, FirestoreError>>.create { [weak base] single in
+            base?.upsertDocumentField(key: key, id: id, data: data, completion: { (result) in
+                return single(.success(result))
+            })
+            return Disposables.create {}
+        }
+        return single
+    }
+
     public func delete(key: String, id: String) -> Single<Result<Void, FirestoreError>> {
        let single = Single<Result<Void, FirestoreError>>.create { [weak base] single in
         base?.delete(key: key, id: id, completion: { (result) in
