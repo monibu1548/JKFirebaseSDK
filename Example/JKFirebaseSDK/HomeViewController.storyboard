@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="uVa-xM-wzW">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Home View Controller-->
+        <scene sceneID="IBC-BP-JZw">
+            <objects>
+                <viewController id="uVa-xM-wzW" customClass="HomeViewController" customModule="JKFirebaseSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Fo7-l3-k4h">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="jbe-dW-F3p">
+                                <rect key="frame" x="-34" y="366" width="482" height="174"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hou-oU-OPy">
+                                        <rect key="frame" x="0.0" y="0.0" width="482" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="odR-Si-4iS"/>
+                                        </constraints>
+                                        <state key="normal" title="구글 연결하기">
+                                            <color key="titleColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="linkGoogleTapped:" destination="uVa-xM-wzW" eventType="touchUpInside" id="mpQ-t4-79L"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a7Q-At-UKE" customClass="FBSDKLoginButton">
+                                        <rect key="frame" x="0.0" y="62" width="482" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="tY2-zh-dVJ"/>
+                                        </constraints>
+                                        <state key="normal" title="페이스북 연결하기">
+                                            <color key="titleColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u6i-H6-5Ac">
+                                        <rect key="frame" x="0.0" y="124" width="482" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="BMj-0a-v2z"/>
+                                        </constraints>
+                                        <state key="normal" title="로그아웃">
+                                            <color key="titleColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="signOutTapped:" destination="uVa-xM-wzW" eventType="touchUpInside" id="9h8-sh-EKD"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="jbe-dW-F3p" firstAttribute="centerY" secondItem="mDP-jX-74H" secondAttribute="centerY" id="pAs-cV-fFc"/>
+                            <constraint firstItem="mDP-jX-74H" firstAttribute="leading" secondItem="jbe-dW-F3p" secondAttribute="leading" constant="34" id="wnx-Zl-Fs8"/>
+                            <constraint firstItem="jbe-dW-F3p" firstAttribute="trailing" secondItem="mDP-jX-74H" secondAttribute="trailing" constant="34" id="zF9-9R-Yic"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="mDP-jX-74H"/>
+                    </view>
+                    <connections>
+                        <outlet property="facebookLoginButton" destination="a7Q-At-UKE" id="yBT-g9-nSv"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="elI-hP-5Kp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="129" y="89"/>
+        </scene>
+    </scenes>
+</document>

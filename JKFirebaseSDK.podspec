@@ -48,6 +48,8 @@ TODO: Add long description of the pod here.
   s.dependency 'Firebase/Analytics', '~> 6.13.0'
   s.dependency 'Firebase/Auth', '~> 6.13.0'
   s.dependency 'Firebase/Messaging', '~> 6.13.0'
+  s.dependency 'GoogleSignIn'
+  s.dependency 'FBSDKLoginKit'
   s.dependency 'RxSwift', '~> 5.0.1'
   s.dependency 'RxOptional', '~> 4.1.0'
 end

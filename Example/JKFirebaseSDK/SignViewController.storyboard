@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cgE-6j-EaB">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Sign View Controller-->
+        <scene sceneID="5VP-qh-vNG">
+            <objects>
+                <viewController id="cgE-6j-EaB" customClass="SignViewController" customModule="JKFirebaseSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="GMz-Fx-TmZ">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="1VH-P3-IHF">
+                                <rect key="frame" x="34" y="345" width="346" height="216"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h1a-PT-PED" customClass="ASAuthorizationAppleIDButton">
+                                        <rect key="frame" x="0.0" y="0.0" width="346" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="rcJ-gF-adl"/>
+                                        </constraints>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YgY-rl-P8D" customClass="FBSDKLoginButton">
+                                        <rect key="frame" x="0.0" y="62" width="346" height="30"/>
+                                        <state key="normal" title="Button"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D9x-Yc-oxr">
+                                        <rect key="frame" x="0.0" y="104" width="346" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="9lv-ye-p0y"/>
+                                        </constraints>
+                                        <state key="normal" title="비회원으로 이용하기">
+                                            <color key="titleColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="didTappedSignInWithAnonymous" destination="cgE-6j-EaB" eventType="touchUpInside" id="v6A-ZH-9PC"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D46-qg-I2I">
+                                        <rect key="frame" x="0.0" y="166" width="346" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="P1y-eg-vYs"/>
+                                        </constraints>
+                                        <state key="normal" title="구글 로그인">
+                                            <color key="titleColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="didTappedSignInWithGoogle" destination="cgE-6j-EaB" eventType="touchUpInside" id="Lg9-Kc-ycB"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="1VH-P3-IHF" firstAttribute="centerY" secondItem="P8D-vf-imV" secondAttribute="centerY" id="Mmz-KL-eS3"/>
+                            <constraint firstItem="1VH-P3-IHF" firstAttribute="leading" secondItem="P8D-vf-imV" secondAttribute="leading" constant="34" id="Whi-MI-HCk"/>
+                            <constraint firstItem="P8D-vf-imV" firstAttribute="trailing" secondItem="1VH-P3-IHF" secondAttribute="trailing" constant="34" id="YDO-PD-EQl"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="P8D-vf-imV"/>
+                    </view>
+                    <connections>
+                        <outlet property="facebookLoginButton" destination="YgY-rl-P8D" id="Ieo-ID-yDO"/>
+                        <outlet property="signInWithAppleButton" destination="h1a-PT-PED" id="GZR-bZ-X15"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Pre-li-xQQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-55" y="124"/>
+        </scene>
+    </scenes>
+</document>

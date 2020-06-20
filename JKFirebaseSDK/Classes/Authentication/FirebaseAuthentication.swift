@@ -7,26 +7,35 @@
 //
 
 import Foundation
+import GoogleSignIn
 import AuthenticationServices
 import FirebaseAuth
 import CommonCrypto
+import FirebaseCore
+import FBSDKLoginKit
 
-enum FirebaseAuthenticationNotification: String {
+public struct JKUser: Codable {
+    let id: String
+    let displayName: String?
+    let email: String?
+    let phoneNumber: String?
+    let photoURL: String?
+}
+
+public enum FirebaseAuthenticationNotification: String {
     case signOutSuccess
     case signOutError
     case signInSuccess
     case signInError
+    case linkUserSuccess
+    case linkUserError
     
-    var notificationName: NSNotification.Name {
+    public var notificationName: NSNotification.Name {
         return NSNotification.Name(rawValue: self.rawValue)
     }
 }
 
-enum FirebaseAuthenticationKey: String {
-    case userID = "JKUserID"
-}
-
-class FirebaseAuthentication: NSObject {
+public class FirebaseAuthentication: NSObject, GIDSignInDelegate, LoginButtonDelegate {
     public static let shared = FirebaseAuthentication()
 
     fileprivate var currentNonce: String?
@@ -39,13 +48,70 @@ class FirebaseAuthentication: NSObject {
     
     public func signUpWithEmail(email: String, password: String) {
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] (authResult, error) in
-            if error != nil {
+            guard let user = authResult?.user, error == nil else {
                 self?.postNotificationSignInError()
                 return
             }
+            self?.registerUser(user: user)
             self?.postNotificationSignInSuccess()
         }
     }
+    
+    public func signInWithGoogle(from: UIViewController) {
+        GIDSignIn.sharedInstance()?.clientID = FirebaseApp.app()?.options.clientID
+        GIDSignIn.sharedInstance()?.delegate = self
+        GIDSignIn.sharedInstance()?.presentingViewController = from
+        GIDSignIn.sharedInstance()?.signIn()
+    }
+    
+    // 구글 로그인 Callback
+    public func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if let _ = error {
+            postNotificationSignInError()
+            return
+        }
+
+        guard let authentication = user.authentication else {
+            postNotificationSignInError()
+            return
+        }
+        
+        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
+
+        link(credential: credential)
+    }
+    
+    private func link(credential: AuthCredential) {
+        if let user = Auth.auth().currentUser {
+            user.link(with: credential) { [weak self] (authResult, error) in
+                guard let _ = authResult?.user, error == nil else {
+                    self?.postNotificationLinkUserError()
+                    return
+                }
+                self?.postNotificationLinkUserSuccess()
+            }
+        } else {
+            Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
+                guard let user = authResult?.user, error == nil else {
+                    self?.postNotificationSignInError()
+                    return
+                }
+                self?.registerUser(user: user)
+                self?.postNotificationSignInSuccess()
+            }
+        }
+    }
+    
+    // Facebook Delegate
+    public func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
+        if error == nil, let tokenString = result?.token?.tokenString {
+            let credential = FacebookAuthProvider.credential(withAccessToken: tokenString)
+            link(credential: credential)
+        }
+    }
+    
+    // Facebook Delegate
+    public func loginButtonDidLogOut(_ loginButton: FBLoginButton) {}
 
     public func signInWithEmail(email: String, password: String) {
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] (authResult, error) in
@@ -83,12 +149,16 @@ class FirebaseAuthentication: NSObject {
         }
     }
     
+    private func registerUser(user: User) {
+        let privateUser = JKUser(id: user.uid, displayName: user.displayName, email: user.email, phoneNumber: user.phoneNumber, photoURL: user.photoURL?.absoluteString)
+        
+        FirebaseFirestore.shared.insert(key: "user", object: privateUser) { (result) in }
+    }
+    
     public func signOut() {
         let firebaseAuth = Auth.auth()
         do {
             try firebaseAuth.signOut()
-            _userID = nil
-            UserDefaults.standard.set(nil, forKey: FirebaseAuthenticationKey.userID.rawValue)
             postNotificationSignOutSuccess()
         } catch {
             postNotificationSignOutError()
@@ -99,41 +169,10 @@ class FirebaseAuthentication: NSObject {
         let firebaseAuth = Auth.auth()
         firebaseAuth.currentUser?.delete(completion: nil)
     }
-
-    // Third-party 로그인 통합을 위한 함수. API Path로 사용할 Unique Key 생성
-    private func registerUser(user: User) {
-        let integrationKey = FirebaseDatabase.shared.addAuthID(path: "private/user-integration-keys")
-        FirebaseDatabase.shared.setObject(path: "private/user-integration-keys/\(integrationKey)", object: user.uid)
-        FirebaseDatabase.shared.setObject(path: "private/users/\(user.uid)/integration-key", object: integrationKey)
-        UserDefaults.standard.set(integrationKey, forKey: FirebaseAuthenticationKey.userID.rawValue)
-    }
-
-    // Third-party 로그인 통합을 위한 함수. 현재 계정에 연결된 UserID 를 반환
-    var _userID: String?
-    public func userID() -> String {
-        if let id = _userID {
-            return id
-        }
-
-        if let key = UserDefaults.standard.string(forKey: FirebaseAuthenticationKey.userID.rawValue) {
-            _userID = key
-            return key
-        }
-
-        guard let UID = FirebaseAuthentication.shared.currentUser()?.uid else {
-            fatalError()
-        }
-
-        FirebaseDatabase.shared.loadObjects(path: "private/users/\(UID)/integration-key", type: String.self) { [weak self] userID in
-            self?._userID = userID
-        }
-
-        fatalError()
-    }
 }
 
 extension FirebaseAuthentication: ASAuthorizationControllerDelegate {
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+    private func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             guard let nonce = currentNonce else {
                 fatalError("Invalid state: A login callback was received, but no login request was sent.")
@@ -151,24 +190,17 @@ extension FirebaseAuthentication: ASAuthorizationControllerDelegate {
                                                       idToken: idTokenString,
                                                       rawNonce: nonce)
             // Sign in with Firebase.
-            Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
-                guard let user = authResult?.user, error == nil else {
-                    self?.postNotificationSignInError()
-                    return
-                }
-                self?.registerUser(user: user)
-                self?.postNotificationSignInSuccess()
-            }
+            link(credential: credential)
         }
     }
     
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+    private func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         postNotificationSignInError()
     }
 }
 
 extension FirebaseAuthentication: ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         return UIApplication.shared.windows.first!
     }
 }
@@ -241,5 +273,13 @@ extension FirebaseAuthentication {
     
     private func postNotificationSignOutError() {
         NotificationCenter.default.post(name: FirebaseAuthenticationNotification.signOutError.notificationName, object: nil)
+    }
+    
+    private func postNotificationLinkUserSuccess() {
+        NotificationCenter.default.post(name: FirebaseAuthenticationNotification.linkUserSuccess.notificationName, object: nil)
+    }
+    
+    private func postNotificationLinkUserError() {
+        NotificationCenter.default.post(name: FirebaseAuthenticationNotification.linkUserError.notificationName, object: nil)
     }
 }
