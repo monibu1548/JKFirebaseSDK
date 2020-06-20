@@ -26,6 +26,7 @@ public struct FirebaseDatabaseQuery {
     public init() {}
 }
 
+@available(*, deprecated, message: "Firestore를 이용해주세요")
 public class FirebaseDatabase {
     public static let shared = FirebaseDatabase()
 

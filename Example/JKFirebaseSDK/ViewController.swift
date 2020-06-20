@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import JKFirebaseSDK
 
 class ViewController: UIViewController {
 
