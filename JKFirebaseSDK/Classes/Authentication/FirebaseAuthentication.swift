@@ -15,11 +15,11 @@ import FirebaseCore
 import FBSDKLoginKit
 
 public struct JKUser: Codable {
-    let id: String
-    let displayName: String?
-    let email: String?
-    let phoneNumber: String?
-    let photoURL: String?
+    public let id: String
+    public let displayName: String?
+    public let email: String?
+    public let phoneNumber: String?
+    public let photoURL: String?
 }
 
 public enum FirebaseAuthenticationNotification: String {
