@@ -9,8 +9,16 @@
 import UIKit
 import AuthenticationServices
 import JKFirebaseSDK
+import FBSDKLoginKit
 
 class SignViewController: FirebaseAuthenticationViewController {
+    @IBOutlet weak var facebookLoginButton: FBLoginButton!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        facebookLoginButton.delegate = FirebaseAuthentication.shared
+        signInWithAppleButton.addTarget(self, action: #selector(signInWithApple), for: .touchUpInside)
+    }
     
     @IBAction override func didTappedSignInWithAnonymous() {
         super.didTappedSignInWithAnonymous()
@@ -24,10 +32,5 @@ class SignViewController: FirebaseAuthenticationViewController {
     
     @IBAction override func didTappedSignInWithGoogle() {
         super.didTappedSignInWithGoogle()
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        signInWithAppleButton.addTarget(self, action: #selector(signInWithApple), for: .touchUpInside)
     }
 }

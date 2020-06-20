@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import GoogleSignIn
+import FBSDKCoreKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -27,9 +28,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    // 구글 로그인
+    // 구글, 페이스북 로그인
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        return GIDSignIn.sharedInstance()?.handle(url) ?? false
+        let facebookHandled = ApplicationDelegate.shared.application(app, open: url, sourceApplication: (options[UIApplicationOpenURLOptionsKey.sourceApplication] as! String), annotation: options[UIApplicationOpenURLOptionsKey.annotation])
+        let googleHandled = GIDSignIn.sharedInstance()?.handle(url) ?? false
+
+        return facebookHandled && googleHandled
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

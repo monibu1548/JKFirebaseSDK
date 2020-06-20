@@ -16,7 +16,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="1VH-P3-IHF">
-                                <rect key="frame" x="34" y="366" width="346" height="174"/>
+                                <rect key="frame" x="34" y="345" width="346" height="216"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h1a-PT-PED" customClass="ASAuthorizationAppleIDButton">
                                         <rect key="frame" x="0.0" y="0.0" width="346" height="50"/>
@@ -24,8 +24,12 @@
                                             <constraint firstAttribute="height" constant="50" id="rcJ-gF-adl"/>
                                         </constraints>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YgY-rl-P8D" customClass="FBSDKLoginButton">
+                                        <rect key="frame" x="0.0" y="62" width="346" height="30"/>
+                                        <state key="normal" title="Button"/>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D9x-Yc-oxr">
-                                        <rect key="frame" x="0.0" y="62" width="346" height="50"/>
+                                        <rect key="frame" x="0.0" y="104" width="346" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="9lv-ye-p0y"/>
                                         </constraints>
@@ -37,7 +41,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D46-qg-I2I">
-                                        <rect key="frame" x="0.0" y="124" width="346" height="50"/>
+                                        <rect key="frame" x="0.0" y="166" width="346" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="P1y-eg-vYs"/>
                                         </constraints>
@@ -60,6 +64,7 @@
                         <viewLayoutGuide key="safeArea" id="P8D-vf-imV"/>
                     </view>
                     <connections>
+                        <outlet property="facebookLoginButton" destination="YgY-rl-P8D" id="Ieo-ID-yDO"/>
                         <outlet property="signInWithAppleButton" destination="h1a-PT-PED" id="GZR-bZ-X15"/>
                     </connections>
                 </viewController>

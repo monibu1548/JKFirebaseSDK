@@ -12,6 +12,15 @@ import AuthenticationServices
 import FirebaseAuth
 import CommonCrypto
 import FirebaseCore
+import FBSDKLoginKit
+
+public struct JKUser: Codable {
+    let id: String
+    let displayName: String?
+    let email: String?
+    let phoneNumber: String?
+    let photoURL: String?
+}
 
 public enum FirebaseAuthenticationNotification: String {
     case signOutSuccess
@@ -26,7 +35,7 @@ public enum FirebaseAuthenticationNotification: String {
     }
 }
 
-public class FirebaseAuthentication: NSObject, GIDSignInDelegate {
+public class FirebaseAuthentication: NSObject, GIDSignInDelegate, LoginButtonDelegate {
     public static let shared = FirebaseAuthentication()
 
     fileprivate var currentNonce: String?
@@ -69,9 +78,13 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate {
         
         let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
 
+        link(credential: credential)
+    }
+    
+    private func link(credential: AuthCredential) {
         if let user = Auth.auth().currentUser {
             user.link(with: credential) { [weak self] (authResult, error) in
-                guard let user = authResult?.user, error == nil else {
+                guard let _ = authResult?.user, error == nil else {
                     self?.postNotificationLinkUserError()
                     return
                 }
@@ -88,6 +101,17 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate {
             }
         }
     }
+    
+    // Facebook Delegate
+    public func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
+        if error == nil, let tokenString = result?.token?.tokenString {
+            let credential = FacebookAuthProvider.credential(withAccessToken: tokenString)
+            link(credential: credential)
+        }
+    }
+    
+    // Facebook Delegate
+    public func loginButtonDidLogOut(_ loginButton: FBLoginButton) {}
 
     public func signInWithEmail(email: String, password: String) {
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] (authResult, error) in
@@ -126,8 +150,9 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate {
     }
     
     private func registerUser(user: User) {
-        FirebaseFirestore.shared.insert(key: "user", object: user.uid) { (result) in
-        }
+        let privateUser = JKUser(id: user.uid, displayName: user.displayName, email: user.email, phoneNumber: user.phoneNumber, photoURL: user.photoURL?.absoluteString)
+        
+        FirebaseFirestore.shared.insert(key: "user", object: privateUser) { (result) in }
     }
     
     public func signOut() {
@@ -147,7 +172,7 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate {
 }
 
 extension FirebaseAuthentication: ASAuthorizationControllerDelegate {
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+    private func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             guard let nonce = currentNonce else {
                 fatalError("Invalid state: A login callback was received, but no login request was sent.")
@@ -165,18 +190,11 @@ extension FirebaseAuthentication: ASAuthorizationControllerDelegate {
                                                       idToken: idTokenString,
                                                       rawNonce: nonce)
             // Sign in with Firebase.
-            Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
-                guard let user = authResult?.user, error == nil else {
-                    self?.postNotificationSignInError()
-                    return
-                }
-                self?.registerUser(user: user)
-                self?.postNotificationSignInSuccess()
-            }
+            link(credential: credential)
         }
     }
     
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+    private func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         postNotificationSignInError()
     }
 }

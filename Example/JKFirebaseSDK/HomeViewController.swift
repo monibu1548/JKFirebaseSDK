@@ -8,14 +8,19 @@
 
 import UIKit
 import JKFirebaseSDK
+import FBSDKLoginKit
 
 class HomeViewController: UIViewController {
 
-    @IBAction func linkGoogleTapped(_ sender: Any) {
-        FirebaseAuthentication.shared.signInWithGoogle(from: self)
+    @IBOutlet weak var facebookLoginButton: FBLoginButton!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        facebookLoginButton.delegate = FirebaseAuthentication.shared
     }
     
-    @IBAction func linkAnonymousTapped(_ sender: Any) {
+    @IBAction func linkGoogleTapped(_ sender: Any) {
+        FirebaseAuthentication.shared.signInWithGoogle(from: self)
     }
     
     @IBAction func signOutTapped(_ sender: Any) {
