@@ -12,9 +12,9 @@ extension FirebaseFirestore: ReactiveCompatible {}
 
 extension Reactive where Base: FirebaseFirestore {
     
-    public func insert<T: Encodable>(key: String, object: T) -> Single<Result<DocumentKey, FirestoreError>> {
+    public func insert<T: Encodable>(key: String, object: T, withID: Bool = false) -> Single<Result<DocumentKey, FirestoreError>> {
         let single = Single<Result<DocumentKey, FirestoreError>>.create { [weak base] single in
-            base?.insert(key: key, object: object, completion: { (result) in
+            base?.insert(key: key, object: object, withID: withID, completion: { (result) in
                 return single(.success(result))
             })
             return Disposables.create {}

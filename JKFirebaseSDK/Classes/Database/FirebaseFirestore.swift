@@ -30,7 +30,7 @@ public class FirebaseFirestore {
         #endif
     }
     
-    public func insert<T: Encodable>(key: String, object: T, completion: @escaping (Result<DocumentKey, FirestoreError>) -> ()) {
+    public func insert<T: Encodable>(key: String, object: T, withID: Bool = false, completion: @escaping (Result<DocumentKey, FirestoreError>) -> ()) {
         guard let dict = object.toDictionary() else {
             completion(.failure(.defaultError("encoding error")))
             return
@@ -49,13 +49,23 @@ public class FirebaseFirestore {
         }
 
         dispatchGroup.notify(queue: .global()) {
-            guard let documentID = documentReference?.documentID, isSuccess else {
-                completion(.failure(.defaultError("insert fail")))
+            if withID, isSuccess, let documentID = documentReference?.documentID {
+                documentReference?.setData(["id": documentID], merge: true, completion: { (error) in
+                    if error != nil {
+                        completion(.failure(.defaultError("insert ID fail")))
+                        return
+                    }
+                    completion(.success(documentID))
+                    return
+                })
+            } else {
+                guard let documentID = documentReference?.documentID, isSuccess else {
+                    completion(.failure(.defaultError("insert fail")))
+                    return
+                }
+                completion(.success(documentID))
                 return
             }
-            
-            completion(.success(documentID))
-            return
         }
     }
     
