@@ -18,6 +18,8 @@ public enum FirebaseAuthenticationNotification: String {
     case signOutError
     case signInSuccess
     case signInError
+    case linkUserSuccess
+    case linkUserError
     
     public var notificationName: NSNotification.Name {
         return NSNotification.Name(rawValue: self.rawValue)
@@ -66,13 +68,24 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate {
         }
         
         let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
-        Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
-            guard let user = authResult?.user, error == nil else {
-                self?.postNotificationSignInError()
-                return
+
+        if let user = Auth.auth().currentUser {
+            user.link(with: credential) { [weak self] (authResult, error) in
+                guard let user = authResult?.user, error == nil else {
+                    self?.postNotificationLinkUserError()
+                    return
+                }
+                self?.postNotificationLinkUserSuccess()
             }
-            self?.registerUser(user: user)
-            self?.postNotificationSignInSuccess()
+        } else {
+            Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
+                guard let user = authResult?.user, error == nil else {
+                    self?.postNotificationSignInError()
+                    return
+                }
+                self?.registerUser(user: user)
+                self?.postNotificationSignInSuccess()
+            }
         }
     }
 
@@ -242,5 +255,13 @@ extension FirebaseAuthentication {
     
     private func postNotificationSignOutError() {
         NotificationCenter.default.post(name: FirebaseAuthenticationNotification.signOutError.notificationName, object: nil)
+    }
+    
+    private func postNotificationLinkUserSuccess() {
+        NotificationCenter.default.post(name: FirebaseAuthenticationNotification.linkUserSuccess.notificationName, object: nil)
+    }
+    
+    private func postNotificationLinkUserError() {
+        NotificationCenter.default.post(name: FirebaseAuthenticationNotification.linkUserError.notificationName, object: nil)
     }
 }
