@@ -24,9 +24,9 @@ public class FirebaseFirestore {
     
     private var reference: DocumentReference {
         #if DEBUG
-        return Firestore.firestore().collection("envrionment").document("development")
+        return Firestore.firestore().collection("environment").document("development")
         #else
-        return Firestore.firestore().collection("envrionment").document("production")
+        return Firestore.firestore().collection("environment").document("production")
         #endif
     }
     
