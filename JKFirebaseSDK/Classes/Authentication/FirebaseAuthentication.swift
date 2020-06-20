@@ -22,10 +22,6 @@ enum FirebaseAuthenticationNotification: String {
     }
 }
 
-enum FirebaseAuthenticationKey: String {
-    case userID = "JKUserID"
-}
-
 class FirebaseAuthentication: NSObject {
     public static let shared = FirebaseAuthentication()
 
@@ -39,10 +35,11 @@ class FirebaseAuthentication: NSObject {
     
     public func signUpWithEmail(email: String, password: String) {
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] (authResult, error) in
-            if error != nil {
+            guard let user = authResult?.user, error == nil else {
                 self?.postNotificationSignInError()
                 return
             }
+            self?.registerUser(user: user)
             self?.postNotificationSignInSuccess()
         }
     }
@@ -83,12 +80,15 @@ class FirebaseAuthentication: NSObject {
         }
     }
     
+    private func registerUser(user: User) {
+        FirebaseFirestore.shared.insert(key: "user", object: user.uid) { (result) in
+        }
+    }
+    
     public func signOut() {
         let firebaseAuth = Auth.auth()
         do {
             try firebaseAuth.signOut()
-            _userID = nil
-            UserDefaults.standard.set(nil, forKey: FirebaseAuthenticationKey.userID.rawValue)
             postNotificationSignOutSuccess()
         } catch {
             postNotificationSignOutError()
@@ -98,37 +98,6 @@ class FirebaseAuthentication: NSObject {
     public func deleteUser() {
         let firebaseAuth = Auth.auth()
         firebaseAuth.currentUser?.delete(completion: nil)
-    }
-
-    // Third-party 로그인 통합을 위한 함수. API Path로 사용할 Unique Key 생성
-    private func registerUser(user: User) {
-        let integrationKey = FirebaseDatabase.shared.addAuthID(path: "private/user-integration-keys")
-        FirebaseDatabase.shared.setObject(path: "private/user-integration-keys/\(integrationKey)", object: user.uid)
-        FirebaseDatabase.shared.setObject(path: "private/users/\(user.uid)/integration-key", object: integrationKey)
-        UserDefaults.standard.set(integrationKey, forKey: FirebaseAuthenticationKey.userID.rawValue)
-    }
-
-    // Third-party 로그인 통합을 위한 함수. 현재 계정에 연결된 UserID 를 반환
-    var _userID: String?
-    public func userID() -> String {
-        if let id = _userID {
-            return id
-        }
-
-        if let key = UserDefaults.standard.string(forKey: FirebaseAuthenticationKey.userID.rawValue) {
-            _userID = key
-            return key
-        }
-
-        guard let UID = FirebaseAuthentication.shared.currentUser()?.uid else {
-            fatalError()
-        }
-
-        FirebaseDatabase.shared.loadObjects(path: "private/users/\(UID)/integration-key", type: String.self) { [weak self] userID in
-            self?._userID = userID
-        }
-
-        fatalError()
     }
 }
 
