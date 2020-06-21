@@ -15,8 +15,8 @@ public enum FirestoreError: Error {
 public typealias DocumentKey = String
 
 public struct QueryOrder {
-    var key: String
-    var isDescending: Bool
+    public var key: String
+    public var isDescending: Bool
 }
 
 public class FirebaseFirestore {
