@@ -17,6 +17,11 @@ public typealias DocumentKey = String
 public struct QueryOrder {
     public var key: String
     public var isDescending: Bool
+
+    public init(key: String, isDescending: Bool) {
+        self.key = key
+        self.isDescending = isDescending
+    }
 }
 
 public class FirebaseFirestore {
