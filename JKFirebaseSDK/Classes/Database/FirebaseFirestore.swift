@@ -171,6 +171,7 @@ public class FirebaseFirestore {
                     return
                 }
             }
+            return
         }
 
         // 페이징 없는 경우
