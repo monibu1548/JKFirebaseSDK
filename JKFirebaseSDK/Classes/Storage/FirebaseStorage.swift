@@ -20,7 +20,13 @@ public enum FirebaseStorageError: Error {
 public class FirebaseStorage {
 
     public static let shared = FirebaseStorage()
-    private let storage = Storage.storage().reference()
+    private var reference: StorageReference {
+        #if DEBUG
+        return Storage.storage().reference().child("environment").child("development")
+        #else
+        return Storage.storage().reference().child("environment").child("production")
+        #endif
+    }
 
     private init() {}
 
@@ -54,7 +60,7 @@ public class FirebaseStorage {
     }
 
     public func deleteImage(downloadURL: String, completion: @escaping (_ result: Result<Void, FirebaseStorageError>)->()) {
-        reference(forURL: downloadURL).delete { (error) in
+        urlToReference(forURL: downloadURL).delete { (error) in
             guard error == nil else {
                 completion(.failure(.deleteError))
                 return
@@ -66,7 +72,7 @@ public class FirebaseStorage {
     private func pathToRef(_ routesString : String) -> StorageReference {
         let routes = routesString.components(separatedBy: "/").filter { !$0.isEmpty }
 
-        var ref = storage
+        var ref = reference
         for route in routes {
             ref = ref.child(route)
         }
@@ -74,7 +80,7 @@ public class FirebaseStorage {
         return ref
     }
 
-    public func reference(forURL: String) -> StorageReference {
+    public func urlToReference(forURL: String) -> StorageReference {
         return Storage.storage().reference(forURL: forURL)
     }
 }

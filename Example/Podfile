@@ -6,7 +6,5 @@ target 'JKFirebaseSDK_Example' do
 
   target 'JKFirebaseSDK_Tests' do
     inherit! :search_paths
-
-    
   end
 end
