@@ -8,23 +8,24 @@
 
 import Foundation
 import FirebaseStorage
+import JKExtension
 
-enum FirebaseStorageError: Error {
+public enum FirebaseStorageError: Error {
     case convertDataError
     case uploadError
     case deleteError
     case defaultError
 }
 
-class FirebaseStorage {
+public class FirebaseStorage {
 
-    static let shared = FirebaseStorage()
+    public static let shared = FirebaseStorage()
     private let storage = Storage.storage().reference()
 
     private init() {}
 
-    func putImage(path: String, image: UIImage, completion: @escaping (_ ref: Result<URL, FirebaseStorageError>)->()) {
-        let pathRef = pathToRef(path).child(String(Date().timeIntervalSince1970)+".jpeg")
+    public func insertImage(path: String, image: UIImage, completion: @escaping (_ ref: Result<URL, FirebaseStorageError>)->()) {
+        let pathRef = pathToRef(path).child(String(Date().toTimestamp())+".jpeg")
         
         guard let data = UIImageJPEGRepresentation(image, 0.2) else {
             pathRef.delete(completion: nil)
@@ -52,7 +53,7 @@ class FirebaseStorage {
         }
     }
 
-    func delete(downloadURL: String, completion: @escaping (_ result: Result<Void, FirebaseStorageError>)->()) {
+    public func deleteImage(downloadURL: String, completion: @escaping (_ result: Result<Void, FirebaseStorageError>)->()) {
         reference(forURL: downloadURL).delete { (error) in
             guard error == nil else {
                 completion(.failure(.deleteError))
@@ -73,7 +74,7 @@ class FirebaseStorage {
         return ref
     }
 
-    func reference(forURL: String) -> StorageReference {
+    public func reference(forURL: String) -> StorageReference {
         return Storage.storage().reference(forURL: forURL)
     }
 }
