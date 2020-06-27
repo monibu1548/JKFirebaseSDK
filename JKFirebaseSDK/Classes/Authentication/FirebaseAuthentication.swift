@@ -172,7 +172,7 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate, LoginButtonDel
 }
 
 extension FirebaseAuthentication: ASAuthorizationControllerDelegate {
-    private func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+    public func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             guard let nonce = currentNonce else {
                 fatalError("Invalid state: A login callback was received, but no login request was sent.")
@@ -194,7 +194,7 @@ extension FirebaseAuthentication: ASAuthorizationControllerDelegate {
         }
     }
     
-    private func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+    public func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         postNotificationSignInError()
     }
 }

@@ -33,7 +33,7 @@ public class FirebaseStorage {
     public func insertImage(path: String, image: UIImage, completion: @escaping (_ ref: Result<URL, FirebaseStorageError>)->()) {
         let pathRef = pathToRef(path).child(String(Date().toTimestamp())+".jpeg")
         
-        guard let data = UIImageJPEGRepresentation(image, 0.2) else {
+        guard let data = image.jpegData(compressionQuality: 0.2) else {
             pathRef.delete(completion: nil)
             completion(.failure(.convertDataError))
             return
