@@ -9,7 +9,7 @@
 import Foundation
 import FirebaseRemoteConfig
 
-class FirebaseRemoteConfig {
+public class FirebaseRemoteConfig {
     static let shared = FirebaseRemoteConfig()
 
     private let remoteConfig = RemoteConfig.remoteConfig()
@@ -23,7 +23,7 @@ class FirebaseRemoteConfig {
         remoteConfig.configSettings = settings
     }
 
-    func initialize(completion: @escaping (_ success: Bool)->()) {
+    public func initialize(completion: @escaping (_ success: Bool)->()) {
         remoteConfig.fetchAndActivate { (status, error) in
             if error != nil {
                 completion(false)
@@ -34,18 +34,18 @@ class FirebaseRemoteConfig {
         }
     }
 
-    func intValue(key: String) -> Int? {
+    public func intValue(key: String) -> Int? {
         guard let value = remoteConfig[key].numberValue?.intValue else {
             return nil
         }
         return value
     }
 
-    func stringValue(key: String) -> String? {
+    public func stringValue(key: String) -> String? {
         return remoteConfig[key].stringValue
     }
 
-    func doubleValue(key: String) -> Double? {
+    public func doubleValue(key: String) -> Double? {
         guard let value = remoteConfig[key].numberValue?.doubleValue else {
             return nil
         }
