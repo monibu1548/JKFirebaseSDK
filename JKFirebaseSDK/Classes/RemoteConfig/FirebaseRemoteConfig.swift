@@ -10,7 +10,7 @@ import Foundation
 import FirebaseRemoteConfig
 
 public class FirebaseRemoteConfig {
-    static let shared = FirebaseRemoteConfig()
+    public static let shared = FirebaseRemoteConfig()
 
     private let remoteConfig = RemoteConfig.remoteConfig()
     private init() {
