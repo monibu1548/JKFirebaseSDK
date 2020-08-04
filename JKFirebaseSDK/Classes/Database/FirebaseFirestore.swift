@@ -17,11 +17,11 @@ public typealias DocumentKey = String
 public enum Query {
     case orderDescending(_ key: String)
     case orderAscending(_ key: String)
-    case isEqual(_ key: String, target: String)
-    case isGreaterThan(_ key: String, target: String)
-    case isLessThan(_ key: String, target: String)
-    case isGreaterThanOrEqualTo(_ key: String, target: String)
-    case isLessThanOrEqualTo(_ key: String, target: String)
+    case isEqual(_ key: String, target: Any)
+    case isGreaterThan(_ key: String, target: Any)
+    case isLessThan(_ key: String, target: Any)
+    case isGreaterThanOrEqualTo(_ key: String, target: Any)
+    case isLessThanOrEqualTo(_ key: String, target: Any)
 }
 
 public class FirebaseFirestore {
