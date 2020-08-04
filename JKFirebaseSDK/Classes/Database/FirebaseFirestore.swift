@@ -14,14 +14,14 @@ public enum FirestoreError: Error {
 
 public typealias DocumentKey = String
 
-public struct QueryOrder {
-    public var key: String
-    public var isDescending: Bool
-
-    public init(key: String, isDescending: Bool) {
-        self.key = key
-        self.isDescending = isDescending
-    }
+public enum Query {
+    case orderDescending(_ key: String)
+    case orderAscending(_ key: String)
+    case isEqual(_ key: String, target: String)
+    case isGreaterThan(_ key: String, target: String)
+    case isLessThan(_ key: String, target: String)
+    case isGreaterThanOrEqualTo(_ key: String, target: String)
+    case isLessThanOrEqualTo(_ key: String, target: String)
 }
 
 public class FirebaseFirestore {
@@ -135,7 +135,7 @@ public class FirebaseFirestore {
         }
     }
     
-    public func list<T: Decodable>(key: String, orderBy: [QueryOrder], limit: Int, latestKey: String?, type: T.Type, completion: @escaping (Result<[T], FirestoreError>) -> ()) {
+    public func list<T: Decodable>(key: String, queries: [Query], limit: Int, latestKey: String?, type: T.Type, completion: @escaping (Result<[T], FirestoreError>) -> ()) {
         
         // 페이징
         if let latestKey = latestKey {
@@ -146,12 +146,27 @@ public class FirebaseFirestore {
                         return
                 }
 
-                var query = reference.collection(key).limit(to: limit)
-                for order in orderBy {
-                    query = query.order(by: order.key, descending: order.isDescending)
+                var queryRef = reference.collection(key).limit(to: limit)
+                for query in queries {
+                    switch query {
+                    case let .orderDescending(key):
+                        queryRef = queryRef.order(by: key, descending: true)
+                    case let .orderAscending(key):
+                        queryRef = queryRef.order(by: key, descending: false)
+                    case let .isEqual(key, target):
+                        queryRef = queryRef.whereField(key, isEqualTo: target)
+                    case let .isGreaterThan(key, target):
+                        queryRef = queryRef.whereField(key, isGreaterThan: target)
+                    case let .isLessThan(key, target):
+                        queryRef = queryRef.whereField(key, isLessThan: target)
+                    case let .isGreaterThanOrEqualTo(key, target):
+                        queryRef = queryRef.whereField(key, isGreaterThanOrEqualTo: target)
+                    case let .isLessThanOrEqualTo(key, target):
+                        queryRef = queryRef.whereField(key, isLessThanOrEqualTo: target)
+                    }
                 }
 
-                query.start(afterDocument: snapshot).getDocuments { (snapshot, error) in
+                queryRef.start(afterDocument: snapshot).getDocuments { (snapshot, error) in
                     guard error == nil else {
                         completion(.failure(.defaultError(error.debugDescription)))
                         return
@@ -175,12 +190,27 @@ public class FirebaseFirestore {
         }
 
         // 페이징 없는 경우
-        var query = reference.collection(key).limit(to: limit)
-        for order in orderBy {
-            query = query.order(by: order.key, descending: order.isDescending)
+        var queryRef = reference.collection(key).limit(to: limit)
+        for query in queries {
+            switch query {
+            case let .orderDescending(key):
+                queryRef = queryRef.order(by: key, descending: true)
+            case let .orderAscending(key):
+                queryRef = queryRef.order(by: key, descending: false)
+            case let .isEqual(key, target):
+                queryRef = queryRef.whereField(key, isEqualTo: target)
+            case let .isGreaterThan(key, target):
+                queryRef = queryRef.whereField(key, isGreaterThan: target)
+            case let .isLessThan(key, target):
+                queryRef = queryRef.whereField(key, isLessThan: target)
+            case let .isGreaterThanOrEqualTo(key, target):
+                queryRef = queryRef.whereField(key, isGreaterThanOrEqualTo: target)
+            case let .isLessThanOrEqualTo(key, target):
+                queryRef = queryRef.whereField(key, isLessThanOrEqualTo: target)
+            }
         }
 
-        query.getDocuments { (snapshot, error) in
+        queryRef.getDocuments { (snapshot, error) in
             guard error == nil else {
                 completion(.failure(.defaultError(error.debugDescription)))
                 return

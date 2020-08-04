@@ -62,9 +62,9 @@ extension Reactive where Base: FirebaseFirestore {
         return single
     }
     
-    public func list<T: Decodable>(key: String, orderBy: [QueryOrder], limit: Int, latestKey: String?, type: T.Type) -> Single<Result<[T], FirestoreError>> {
+    public func list<T: Decodable>(key: String, queries: [Query], limit: Int, latestKey: String?, type: T.Type) -> Single<Result<[T], FirestoreError>> {
         let single = Single<Result<[T], FirestoreError>>.create { [weak base] single in
-            base?.list(key: key, orderBy: orderBy, limit: limit, latestKey: latestKey, type: type, completion: { (result) in
+            base?.list(key: key, queries: queries, limit: limit, latestKey: latestKey, type: type, completion: { (result) in
                 return single(.success(result))
             })
             return Disposables.create {}
