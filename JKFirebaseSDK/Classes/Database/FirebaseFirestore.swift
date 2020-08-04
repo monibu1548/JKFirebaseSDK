@@ -22,6 +22,7 @@ public enum Query {
     case isLessThan(_ key: String, target: Any)
     case isGreaterThanOrEqualTo(_ key: String, target: Any)
     case isLessThanOrEqualTo(_ key: String, target: Any)
+    case arrayContains(_ key: String, target: Any)
 }
 
 public class FirebaseFirestore {
@@ -163,6 +164,8 @@ public class FirebaseFirestore {
                         queryRef = queryRef.whereField(key, isGreaterThanOrEqualTo: target)
                     case let .isLessThanOrEqualTo(key, target):
                         queryRef = queryRef.whereField(key, isLessThanOrEqualTo: target)
+                    case let .arrayContains(key, target):
+                        queryRef = queryRef.whereField(key, arrayContains: target)
                     }
                 }
 
@@ -207,6 +210,8 @@ public class FirebaseFirestore {
                 queryRef = queryRef.whereField(key, isGreaterThanOrEqualTo: target)
             case let .isLessThanOrEqualTo(key, target):
                 queryRef = queryRef.whereField(key, isLessThanOrEqualTo: target)
+            case let .arrayContains(key, target):
+                queryRef = queryRef.whereField(key, arrayContains: target)
             }
         }
 
