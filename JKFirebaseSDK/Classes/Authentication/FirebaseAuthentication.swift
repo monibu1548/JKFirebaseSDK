@@ -52,7 +52,6 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate, LoginButtonDel
                 self?.postNotificationSignInError()
                 return
             }
-            self?.registerUser(user: user)
             self?.postNotificationSignInSuccess()
         }
     }
@@ -96,7 +95,6 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate, LoginButtonDel
                     self?.postNotificationSignInError()
                     return
                 }
-                self?.registerUser(user: user)
                 self?.postNotificationSignInSuccess()
             }
         }
@@ -119,7 +117,6 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate, LoginButtonDel
                 self?.postNotificationSignInError()
                 return
             }
-            self?.registerUser(user: user)
             self?.postNotificationSignInSuccess()
         }
     }
@@ -144,15 +141,8 @@ public class FirebaseAuthentication: NSObject, GIDSignInDelegate, LoginButtonDel
                 self?.postNotificationSignInError()
                 return
             }
-            self?.registerUser(user: user)
             self?.postNotificationSignInSuccess()
         }
-    }
-    
-    private func registerUser(user: User) {
-        let privateUser = JKUser(id: user.uid, displayName: user.displayName, email: user.email, phoneNumber: user.phoneNumber, photoURL: user.photoURL?.absoluteString)
-        
-        FirebaseFirestore.shared.insert(key: "user", object: privateUser) { (result) in }
     }
     
     public func signOut() {
