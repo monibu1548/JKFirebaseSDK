@@ -36,6 +36,8 @@ public class FirebaseFirestore {
         #endif
     }
     
+    private var rootReference = Firestore.firestore()
+    
     public func insert<T: Encodable>(key: String, object: T, withID: Bool = false, completion: @escaping (Result<DocumentKey, FirestoreError>) -> ()) {
         guard let dict = object.toDictionary() else {
             completion(.failure(.defaultError("encoding error")))
@@ -216,6 +218,29 @@ public class FirebaseFirestore {
         }
 
         queryRef.getDocuments { (snapshot, error) in
+            guard error == nil else {
+                completion(.failure(.defaultError(error.debugDescription)))
+                return
+            }
+            
+            guard let documents = snapshot?.documents else {
+                completion(.failure(.defaultError("snapshot documents are empty")))
+                return
+            }
+            
+            let values = documents
+                .map { $0.data() }
+                .compactMap { try? JSONSerialization.data(withJSONObject: $0) }
+                .compactMap { try? JSONDecoder().decode(T.self, from: $0) }
+            
+            completion(.success(values))
+            return
+        }
+    }
+    
+    public func listFromRoot<T: Decodable>(key: String, type: T.Type, completion: @escaping (Result<[T], FirestoreError>) -> ()) {
+
+        rootReference.collection(key).getDocuments { (snapshot, error) in
             guard error == nil else {
                 completion(.failure(.defaultError(error.debugDescription)))
                 return
