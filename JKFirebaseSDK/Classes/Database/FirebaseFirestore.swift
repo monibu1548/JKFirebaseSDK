@@ -238,26 +238,25 @@ public class FirebaseFirestore {
         }
     }
     
-    public func listFromRoot<T: Decodable>(key: String, type: T.Type, completion: @escaping (Result<[T], FirestoreError>) -> ()) {
-
-        rootReference.collection(key).getDocuments { (snapshot, error) in
+    public func readFromRoot<T: Decodable>(key: String, id: String, type: T.Type, completion: @escaping (Result<T, FirestoreError>) -> ()) {
+        rootReference.collection(key).document(id).getDocument { (snapshot, error) in
             guard error == nil else {
                 completion(.failure(.defaultError(error.debugDescription)))
                 return
             }
             
-            guard let documents = snapshot?.documents else {
-                completion(.failure(.defaultError("snapshot documents are empty")))
+            guard let snapshotData = snapshot?.data(),
+                let data = try? JSONSerialization.data(withJSONObject: snapshotData) else {
+                completion(.failure(.defaultError("snapshot is empty")))
                 return
             }
             
-            let values = documents
-                .map { $0.data() }
-                .compactMap { try? JSONSerialization.data(withJSONObject: $0) }
-                .compactMap { try? JSONDecoder().decode(T.self, from: $0) }
+            guard let value = try? JSONDecoder().decode(T.self, from: data) else {
+                completion(.failure(.defaultError("cannot parsing")))
+                return
+            }
             
-            completion(.success(values))
-            return
+            completion(.success(value))
         }
     }
 }
